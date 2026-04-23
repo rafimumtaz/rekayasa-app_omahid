@@ -12,14 +12,17 @@ export default function Home() {
             OMAH.ID
           </Link>
 
-          <div className="flex-1 max-w-2xl w-full relative">
+          <form action="/search" className="flex-1 max-w-2xl w-full relative">
             <input
               type="text"
+              name="q"
               placeholder="Search for anything..."
               className="w-full bg-[#D9EAFD]/30 border-none rounded-sm py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#0088FF]"
             />
-            <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-          </div>
+            <button type="submit" className="absolute right-4 top-1/2 -translate-y-1/2">
+              <Search className="w-5 h-5 text-slate-500 hover:text-[#0088FF] transition-colors" />
+            </button>
+          </form>
 
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-2 cursor-pointer">

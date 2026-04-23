@@ -40,7 +40,12 @@ function LoginForm() {
         throw new Error(data.error || 'Invalid credentials')
       }
 
-      router.push('/dashboard')
+      if (data.user?.role === 'ADMIN') {
+        router.push('/dashboard')
+      } else {
+        router.push('/')
+      }
+      
       router.refresh()
     } catch (err: any) {
       setError(err.message)
@@ -56,8 +61,8 @@ function LoginForm() {
       className="w-full bg-white p-10 rounded-[40px] shadow-2xl shadow-blue-900/5 border border-slate-50/50"
     >
       <div className="text-center mb-8 space-y-2">
-        <h2 className="text-2xl font-bold text-[#070864] font-serif">Masuk ke Dashboard</h2>
-        <p className="text-sm text-slate-500">Silakan Login Untuk Admin</p>
+        <h2 className="text-2xl font-bold text-[#070864] font-serif">Masuk ke OMAH.ID</h2>
+        <p className="text-sm text-slate-500">Silakan Login Untuk Melanjutkan</p>
       </div>
 
       {success && (
@@ -75,7 +80,7 @@ function LoginForm() {
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
             <input
               type="email"
-              placeholder="admin@omah.id"
+              placeholder="user@omah.id"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -153,7 +158,7 @@ export default function LoginPage() {
         {/* Header Logo */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-black text-[#070864] tracking-tight mb-2">OMAH.ID</h1>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Akses Khusus Admin</p>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Akses Akun Anda</p>
         </div>
 
         {/* Login Card */}
@@ -174,7 +179,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <p className="mt-8 text-[10px] font-bold text-slate-400 tracking-widest uppercase">
-          © 2026 OMAH.ID ADMIN DASHBOARD
+          © 2026 OMAH.ID
         </p>
       </div>
     </div>
