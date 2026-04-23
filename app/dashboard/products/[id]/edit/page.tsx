@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import { ArrowLeft, Save, UploadCloud, Trash2 } from 'lucide-react'
 import SubmitButton from '@/components/SubmitButton'
+import DeleteImageButton from '@/components/DeleteImageButton'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
@@ -159,13 +160,10 @@ export default async function AdminEditProduct({ params }: { params: Promise<{ i
                   {product.images.map((img) => (
                     <div key={img.id} className="relative group aspect-square bg-white rounded-xl border border-slate-200 overflow-hidden">
                       <img src={img.url} alt="Product" className="w-full h-full object-cover" />
-                      <form action={async () => { 'use server'; await deleteImage(img.id); }} className="absolute top-2 right-2">
-                        <SubmitButton 
-                          className="p-2 bg-red-500 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                          icon={<Trash2 className="w-4 h-4" />}
-                        >
-                        </SubmitButton>
-                      </form>
+                      <DeleteImageButton 
+                        imageId={img.id} 
+                        onDelete={deleteImage} 
+                      />
                     </div>
                   ))}
                 </div>

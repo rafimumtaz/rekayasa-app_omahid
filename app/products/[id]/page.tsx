@@ -59,7 +59,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
             {/* Price Badge */}
             <div>
-              <div className="inline-block bg-[#0088FF] text-white text-2xl font-black px-6 py-3 rounded-xl">
+              <div className="inline-block bg-green-600 text-white text-2xl font-black px-6 py-3 rounded-xl">
                 Rp {product.price.toLocaleString('id-ID')}
               </div>
             </div>
@@ -68,7 +68,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             {product.category && (
               <div>
                 <p className="text-sm font-bold text-slate-500 mb-3 uppercase tracking-widest">Kategori</p>
-                <span className="bg-[#070864] text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest">
+                <span className="bg-green-500 text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest">
                   {product.category}
                 </span>
               </div>
@@ -77,11 +77,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             {/* Stock Badge */}
             <div className="flex items-center gap-3">
               <span className="text-sm font-bold text-slate-500 uppercase tracking-widest">Stok:</span>
-              <span className={`text-xs font-bold px-3 py-1 rounded-full ${
-                product.stock > 10 ? 'bg-green-100 text-green-700' :
+              <span className={`text-xs font-bold px-3 py-1 rounded-full ${product.stock > 10 ? 'bg-green-100 text-green-700' :
                 product.stock > 0 ? 'bg-orange-100 text-orange-700' :
-                'bg-red-100 text-red-700'
-              }`}>
+                  'bg-red-100 text-red-700'
+                }`}>
                 {product.stock > 0 ? `${product.stock} tersedia` : 'Habis'}
               </span>
             </div>
@@ -109,7 +108,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
             {/* Actions */}
             <div className="flex items-center gap-3 pt-2">
               <button
-                className="flex-1 h-14 bg-[#0088FF] hover:bg-blue-600 text-white font-black text-sm rounded-xl tracking-widest transition-all shadow-lg shadow-blue-400/30"
+                className="flex-1 h-14 bg-green-600 hover:bg-green-700 text-white font-black text-sm rounded-xl tracking-widest transition-all shadow-lg shadow-green-400/30"
               >
                 BELI SEKARANG
               </button>
@@ -138,9 +137,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               product.images.map((img, idx) => (
                 <div
                   key={img.id}
-                  className={`shrink-0 w-[185px] h-[150px] rounded-2xl overflow-hidden border-2 transition-all cursor-pointer ${
-                    idx === 0 ? 'border-[#070864] shadow-md' : 'border-transparent hover:border-[#070864]/40'
-                  }`}
+                  className={`shrink-0 w-[185px] h-[150px] rounded-2xl overflow-hidden border-2 transition-all cursor-pointer ${idx === 0 ? 'border-[#070864] shadow-md' : 'border-transparent hover:border-[#070864]/40'
+                    }`}
                 >
                   <img src={img.url} alt={`Gambar ${idx + 1}`} className="w-full h-full object-cover" />
                 </div>
