@@ -1,12 +1,16 @@
 import { prisma } from '@/lib/prisma'
 import { redirect, notFound } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import { ArrowLeft, Save, UploadCloud, Trash2 } from 'lucide-react'
 import SubmitButton from '@/components/SubmitButton'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 
+                    process.env.SUPABASE_BUCKET_SECRET_KEY || 
+                    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || 
+                    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default async function AdminEditProduct({ params }: { params: Promise<{ id: string }> }) {
@@ -40,6 +44,7 @@ export default async function AdminEditProduct({ params }: { params: Promise<{ i
         const fileExt = file.name.split('.').pop()
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
         
+        console.log(`Uploading new file: ${fileName}, size: ${file.size}`)
         const { data, error } = await supabase
           .storage
           .from('products')
@@ -50,7 +55,10 @@ export default async function AdminEditProduct({ params }: { params: Promise<{ i
 
         if (!error) {
           const { data: publicUrlData } = supabase.storage.from('products').getPublicUrl(fileName)
+          console.log(`Upload success! New URL: ${publicUrlData.publicUrl}`)
           newImageUrls.push(publicUrlData.publicUrl)
+        } else {
+          console.error('Supabase upload error detail (Edit):', error)
         }
       }
     }
@@ -74,6 +82,10 @@ export default async function AdminEditProduct({ params }: { params: Promise<{ i
         }
       }
     })
+    revalidatePath('/dashboard/products')
+    revalidatePath(`/dashboard/products/${id}/edit`)
+    revalidatePath('/search')
+    revalidatePath('/')
 
     redirect('/dashboard/products')
   }
@@ -83,6 +95,8 @@ export default async function AdminEditProduct({ params }: { params: Promise<{ i
     await prisma.productImage.delete({
       where: { id: imageId }
     })
+    revalidatePath(`/dashboard/products/${id}/edit`)
+    revalidatePath('/dashboard/products')
     // No easy way to revalidate in a server action without refresh or redirecting
     // but we can redirect back to the same page
     redirect(`/dashboard/products/${id}/edit`)
@@ -100,7 +114,7 @@ export default async function AdminEditProduct({ params }: { params: Promise<{ i
         </div>
       </div>
 
-      <form action={updateProduct} className="space-y-8">
+      <form action={updateProduct} className="space-y-8" encType="multipart/form-data">
         {/* Info Dasar */}
         <div>
           <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">

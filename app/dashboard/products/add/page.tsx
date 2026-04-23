@@ -1,12 +1,16 @@
 import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
 import { ArrowLeft, Save, UploadCloud, X } from 'lucide-react'
 import SubmitButton from '@/components/SubmitButton'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 
+                    process.env.SUPABASE_BUCKET_SECRET_KEY || 
+                    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || 
+                    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default function AdminAddProduct() {
@@ -30,6 +34,7 @@ export default function AdminAddProduct() {
         const fileExt = file.name.split('.').pop()
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
         
+        console.log(`Uploading file: ${fileName}, size: ${file.size}`)
         const { data, error } = await supabase
           .storage
           .from('products')
@@ -40,9 +45,10 @@ export default function AdminAddProduct() {
 
         if (!error) {
           const { data: publicUrlData } = supabase.storage.from('products').getPublicUrl(fileName)
+          console.log(`Upload success! URL: ${publicUrlData.publicUrl}`)
           finalImageUrls.push(publicUrlData.publicUrl)
         } else {
-          console.error('Supabase upload error:', error)
+          console.error('Supabase upload error detail:', error)
         }
       }
     }
@@ -66,6 +72,9 @@ export default function AdminAddProduct() {
           }
         }
       })
+      revalidatePath('/dashboard/products')
+      revalidatePath('/search')
+      revalidatePath('/')
     }
     redirect('/dashboard/products')
   }
@@ -82,7 +91,7 @@ export default function AdminAddProduct() {
         </div>
       </div>
 
-      <form action={createProduct} className="space-y-8">
+      <form action={createProduct} className="space-y-8" encType="multipart/form-data">
         {/* Info Dasar */}
         <div>
           <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">

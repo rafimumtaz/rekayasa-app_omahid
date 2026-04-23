@@ -4,7 +4,7 @@ import { useFormStatus } from 'react-dom'
 import { Loader2 } from 'lucide-react'
 
 interface SubmitButtonProps {
-  children: React.ReactNode
+  children?: React.ReactNode
   className?: string
   icon?: React.ReactNode
 }

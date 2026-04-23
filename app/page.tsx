@@ -1,8 +1,17 @@
-import { Search, MapPin, Heart, ShoppingBag, User, ArrowRight, CreditCard } from 'lucide-react'
+import { Search, MapPin, Heart, ShoppingBag, User, ArrowRight, CreditCard, ShoppingCart } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Link from 'next/link'
+import { prisma } from '@/lib/prisma'
 
-export default function Home() {
+export default async function Home() {
+  const products = await prisma.product.findMany({
+    include: { images: true },
+    orderBy: { createdAt: 'desc' },
+    take: 8
+  })
+
+  const heroProduct = products[0]
+
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
       {/* Header / Navbar */}
@@ -12,23 +21,31 @@ export default function Home() {
         {/* Hero Banner */}
         <section className="w-full">
           <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row min-h-[400px]">
-            {/* Image Placeholder area (Left) */}
-            <div className="md:w-[55%] relative bg-slate-200 min-h-[400px] bg-cover bg-center overflow-hidden flex items-center justify-center">
-              <div className="text-slate-400 font-medium">[ Kasur Image from SVG ]</div>
+            {/* Image area (Left) */}
+            <div className="md:w-[55%] relative bg-slate-100 min-h-[400px] bg-cover bg-center overflow-hidden flex items-center justify-center">
+              {heroProduct?.images[0] ? (
+                <img 
+                  src={heroProduct.images[0].url} 
+                  alt={heroProduct.name} 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="text-slate-400 font-medium">[ {heroProduct?.name || 'Kasur'} Image ]</div>
+              )}
             </div>
 
             {/* Text area (Right) */}
             <div className="md:w-[45%] bg-[#9AA6B2] p-12 md:p-16 flex flex-col justify-center">
               <h3 className="text-[#0088FF] font-bold text-lg tracking-widest mb-6 uppercase">
-                Kasur Serenity
+                {heroProduct?.category || 'Katalog Baru'}
               </h3>
               <h2 className="text-white text-3xl md:text-4xl font-serif leading-snug mb-10">
-                “Nikmati kenyamanan maksimal dengan tempat tidur yang dirancang untuk gaya hidup modern.”
+                “{heroProduct?.description.substring(0, 100) || 'Nikmati kenyamanan maksimal dengan tempat tidur yang dirancang untuk gaya hidup modern.'}...”
               </h2>
               <div>
-                <button className="bg-[#0088FF] text-white px-8 py-3 font-bold text-sm hover:bg-blue-600 transition-colors">
+                <Link href={heroProduct ? `/search?q=${heroProduct.name}` : '#'} className="bg-[#0088FF] inline-block text-white px-8 py-3 font-bold text-sm hover:bg-blue-600 transition-colors">
                   LIAT DETAIL
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -65,14 +82,39 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {/* Product Placeholders matching the grid layout */}
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <div key={i} className="aspect-square bg-slate-100 flex items-center justify-center text-slate-400 group relative overflow-hidden">
-                Product Image
-                <div className="absolute bottom-0 w-full p-4 bg-white/90 translate-y-full group-hover:translate-y-0 transition-transform">
-                  <p className="font-semibold text-slate-900">Product Name</p>
-                  <p className="text-sm font-bold text-[#0088FF]">Rp 1.000.000</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {products.length === 0 && (
+              <div className="col-span-full text-center py-20 text-slate-400 font-medium bg-slate-50 rounded-3xl">
+                Belum ada produk yang tersedia.
+              </div>
+            )}
+            {products.map((p) => (
+              <div key={p.id} className="group cursor-pointer">
+                <div className="aspect-square bg-slate-50 flex items-center justify-center text-slate-400 relative overflow-hidden rounded-3xl border border-slate-100 mb-4 shadow-sm group-hover:shadow-xl group-hover:shadow-blue-900/5 transition-all duration-500">
+                  {p.images[0] ? (
+                    <img 
+                      src={p.images[0].url} 
+                      alt={p.name} 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                    />
+                  ) : (
+                    <div className="text-[10px] font-bold uppercase tracking-widest">No Image</div>
+                  )}
+                  
+                  {/* Hover Actions */}
+                  <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                     <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#070864] shadow-lg hover:scale-110 transition-transform">
+                        <ShoppingCart className="w-5 h-5" />
+                     </button>
+                     <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-red-500 shadow-lg hover:scale-110 transition-transform">
+                        <Heart className="w-5 h-5" />
+                     </button>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{p.category || 'Furniture'}</p>
+                  <h4 className="font-bold text-slate-900 text-lg group-hover:text-[#0088FF] transition-colors line-clamp-1">{p.name}</h4>
+                  <p className="text-base font-black text-[#070864]">Rp {p.price.toLocaleString('id-ID')}</p>
                 </div>
               </div>
             ))}
