@@ -7,10 +7,12 @@ import SubmitButton from '@/components/SubmitButton'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_SECRET_KEY || 
+                    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 
+                    process.env.SUPABASE_SERVICE_ROLE_KEY || 
                     process.env.SUPABASE_BUCKET_SECRET_KEY || 
-                    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || 
-                    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+                    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || ''
+console.log('Supabase Key used (prefix):', supabaseKey.substring(0, 10) + '...')
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default function AdminAddProduct() {
@@ -91,7 +93,7 @@ export default function AdminAddProduct() {
         </div>
       </div>
 
-      <form action={createProduct} className="space-y-8" encType="multipart/form-data">
+      <form action={createProduct} className="space-y-8">
         {/* Info Dasar */}
         <div>
           <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">

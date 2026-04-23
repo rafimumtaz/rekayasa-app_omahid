@@ -8,10 +8,12 @@ import DeleteImageButton from '@/components/DeleteImageButton'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_SECRET_KEY || 
+                    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 
+                    process.env.SUPABASE_SERVICE_ROLE_KEY || 
                     process.env.SUPABASE_BUCKET_SECRET_KEY || 
-                    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || 
-                    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+                    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || ''
+console.log('Supabase Key used (prefix):', supabaseKey.substring(0, 10) + '...')
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 export default async function AdminEditProduct({ params }: { params: Promise<{ id: string }> }) {
@@ -38,6 +40,9 @@ export default async function AdminEditProduct({ params }: { params: Promise<{ i
     const imageUrlsInput = formData.get('imageUrls') as string
     
     const newImageUrls: string[] = []
+    
+    console.log('Form data keys:', Array.from(formData.keys()))
+    console.log('Files received:', imageFiles.length)
 
     // Process file uploads
     for (const file of imageFiles) {
@@ -68,6 +73,8 @@ export default async function AdminEditProduct({ params }: { params: Promise<{ i
       const urls = imageUrlsInput.split(',').map(url => url.trim()).filter(url => url !== '')
       newImageUrls.push(...urls)
     }
+
+    console.log('Final new image URLs to save:', newImageUrls)
 
     // Update product
     await prisma.product.update({
@@ -115,7 +122,7 @@ export default async function AdminEditProduct({ params }: { params: Promise<{ i
         </div>
       </div>
 
-      <form action={updateProduct} className="space-y-8" encType="multipart/form-data">
+      <form action={updateProduct} className="space-y-8">
         {/* Info Dasar */}
         <div>
           <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
