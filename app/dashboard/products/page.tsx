@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Plus, Edit, Trash2 } from 'lucide-react'
+import { revalidatePath } from 'next/cache'
+import SubmitButton from '@/components/SubmitButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -9,6 +11,15 @@ export default async function AdminProductsList() {
     include: { images: true },
     orderBy: { createdAt: 'desc' }
   })
+
+  async function deleteProduct(formData: FormData) {
+    'use server'
+    const id = formData.get('id') as string
+    if (id) {
+      await prisma.product.delete({ where: { id } })
+      revalidatePath('/dashboard/products')
+    }
+  }
 
   return (
     <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
@@ -72,9 +83,14 @@ export default async function AdminProductsList() {
                     <Link href={`/dashboard/products/${p.id}/edit`} className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" title="Edit">
                       <Edit className="w-4 h-4" />
                     </Link>
-                    <button className="p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Hapus">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <form action={deleteProduct}>
+                      <input type="hidden" name="id" value={p.id} />
+                      <SubmitButton 
+                        className="p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors" 
+                        icon={<Trash2 className="w-4 h-4" />}
+                      >
+                      </SubmitButton>
+                    </form>
                   </div>
                 </td>
               </tr>

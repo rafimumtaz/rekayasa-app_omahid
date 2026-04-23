@@ -1,0 +1,22 @@
+- Integrasi PostgreSQL (Supabase)
+- Prisma v7 ORM dengan Adapter PG
+- Integrasi Supabase Storage (Unggah Gambar)
+- API Seeding Produk
+- Sistem Login User & Admin
+- Role-Based Access Control (RBAC)
+- Proteksi Halaman Admin (Middleware)
+- Manajemen Sesi JWT & Cookies
+- Halaman Landing Page Responsif
+- Sistem Pencarian Produk (Case-insensitive)
+- Halaman Profil Pengguna
+- Fitur Update Nama & Password
+- Navbar Dinamis (Auth-aware)
+- Skema Database Cart & Wishlist
+- Layout Dashboard Admin
+- Manajemen Daftar Produk
+- Fitur Tambah Produk (Multi-images)
+- Fitur Edit Produk & Manajemen Gambar
+- Fitur Manajemen Stok
+- UI/UX Premium (Navy Blue Theme)
+- Integrasi Lucide Icons
+- Desain Responsif (Mobile Friendly)

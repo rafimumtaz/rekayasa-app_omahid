@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save, UploadCloud, X } from 'lucide-react'
+import SubmitButton from '@/components/SubmitButton'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
@@ -147,9 +148,12 @@ export default function AdminAddProduct() {
 
         <div className="flex justify-end pt-6 border-t border-slate-100">
           <Link href="/dashboard/products" className="px-6 py-3 text-slate-500 font-semibold text-sm hover:text-slate-800 transition-colors mr-4">Batal</Link>
-          <button type="submit" className="flex items-center gap-2 bg-[#070864] text-white px-8 py-3 rounded-xl text-sm font-bold hover:bg-blue-900 shadow-xl shadow-blue-900/20 transition-all">
-            <Save className="w-5 h-5" /> Simpan Produk
-          </button>
+          <SubmitButton 
+            className="bg-[#070864] text-white px-8 py-3 rounded-xl text-sm font-bold hover:bg-blue-900 shadow-xl shadow-blue-900/20 transition-all"
+            icon={<Save className="w-5 h-5" />}
+          >
+            Simpan Produk
+          </SubmitButton>
         </div>
       </form>
     </div>

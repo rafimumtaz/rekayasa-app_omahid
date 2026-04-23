@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { Save, AlertCircle } from 'lucide-react'
+import SubmitButton from '@/components/SubmitButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -99,9 +100,12 @@ export default async function AdminStockManagement() {
                       min="0"
                       className="w-24 px-4 py-2 rounded-xl border border-slate-200 bg-white focus:border-[#070864] focus:ring-2 focus:ring-blue-100 outline-none text-center font-bold text-slate-800 transition-all shadow-inner"
                     />
-                    <button type="submit" className="p-2.5 bg-[#070864] text-white hover:bg-blue-900 rounded-xl transition-all shadow-md shadow-blue-900/20" title="Simpan Perubahan Stok">
-                      <Save className="w-4 h-4" />
-                    </button>
+                    <SubmitButton 
+                      className="p-2.5 bg-[#070864] text-white hover:bg-blue-900 rounded-xl transition-all shadow-md shadow-blue-900/20" 
+                      icon={<Save className="w-4 h-4" />}
+                    >
+                      {/* Empty children because icon is enough */}
+                    </SubmitButton>
                   </form>
                 </td>
               </tr>
