@@ -42,11 +42,20 @@ export async function GET() {
       },
     ]
 
-    const created = await prisma.product.createMany({
-      data: sampleProducts,
-    })
+    for (const p of sampleProducts) {
+      await prisma.product.create({
+        data: {
+          ...p,
+          images: {
+            create: [
+              { url: 'https://images.unsplash.com/photo-1505693419173-42b9218a5c81?q=80&w=2073&auto=format&fit=crop' }
+            ]
+          }
+        }
+      })
+    }
 
-    return NextResponse.json({ message: 'Seeded successfully', created })
+    return NextResponse.json({ message: 'Seeded successfully', count: sampleProducts.length })
   } catch (error: any) {
     console.error('Seed error:', error)
     return NextResponse.json({ error: 'Failed to seed products', details: error.message }, { status: 500 })

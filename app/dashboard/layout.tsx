@@ -19,6 +19,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           throw new Error('Not authenticated')
         }
         const data = await res.json()
+        if (data.user.role !== 'ADMIN') {
+          router.push('/')
+          return
+        }
         setUser(data.user)
       } catch (e) {
         router.push('/login')

@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function AdminProductsList() {
   const products = await prisma.product.findMany({
+    include: { images: true },
     orderBy: { createdAt: 'desc' }
   })
 
@@ -42,8 +43,8 @@ export default async function AdminProductsList() {
               <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
                 <td className="px-6 py-4 flex items-center gap-4">
                   <div className="w-14 h-14 bg-slate-100 rounded-xl overflow-hidden shrink-0 border border-slate-200">
-                    {p.imageUrl ? (
-                      <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                    {p.images && p.images.length > 0 ? (
+                      <img src={p.images[0].url} alt={p.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-[10px] text-slate-400 font-medium">No Img</div>
                     )}
@@ -68,9 +69,9 @@ export default async function AdminProductsList() {
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex justify-end gap-2">
-                    <button className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" title="Edit">
+                    <Link href={`/dashboard/products/${p.id}/edit`} className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors" title="Edit">
                       <Edit className="w-4 h-4" />
-                    </button>
+                    </Link>
                     <button className="p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors" title="Hapus">
                       <Trash2 className="w-4 h-4" />
                     </button>

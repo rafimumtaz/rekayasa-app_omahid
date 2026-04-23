@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, UploadCloud } from 'lucide-react'
+import { ArrowLeft, Save, UploadCloud, X } from 'lucide-react'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
@@ -16,33 +16,54 @@ export default function AdminAddProduct() {
     const price = parseFloat(formData.get('price') as string)
     const stock = parseInt(formData.get('stock') as string) || 0
     const description = formData.get('description') as string
-    let imageUrl = formData.get('imageUrl') as string || null
     
-    const imageFile = formData.get('imageFile') as File | null
+    // Multiple images
+    const imageFiles = formData.getAll('imageFiles') as File[]
+    const imageUrlsInput = formData.get('imageUrls') as string // Comma separated URLs
+    
+    const finalImageUrls: string[] = []
 
-    if (imageFile && imageFile.size > 0) {
-      const fileExt = imageFile.name.split('.').pop()
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
-      
-      const { data, error } = await supabase
-        .storage
-        .from('products')
-        .upload(fileName, imageFile, {
-          cacheControl: '3600',
-          upsert: false
-        })
+    // Process file uploads
+    for (const file of imageFiles) {
+      if (file.size > 0) {
+        const fileExt = file.name.split('.').pop()
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+        
+        const { data, error } = await supabase
+          .storage
+          .from('products')
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: false
+          })
 
-      if (!error) {
-        const { data: publicUrlData } = supabase.storage.from('products').getPublicUrl(fileName)
-        imageUrl = publicUrlData.publicUrl
-      } else {
-        console.error('Supabase upload error:', error)
+        if (!error) {
+          const { data: publicUrlData } = supabase.storage.from('products').getPublicUrl(fileName)
+          finalImageUrls.push(publicUrlData.publicUrl)
+        } else {
+          console.error('Supabase upload error:', error)
+        }
       }
+    }
+
+    // Process manual URLs
+    if (imageUrlsInput) {
+      const urls = imageUrlsInput.split(',').map(url => url.trim()).filter(url => url !== '')
+      finalImageUrls.push(...urls)
     }
 
     if (name && !isNaN(price)) {
       await prisma.product.create({
-        data: { name, category, price, stock, description, imageUrl }
+        data: { 
+          name, 
+          category, 
+          price, 
+          stock, 
+          description,
+          images: {
+            create: finalImageUrls.map(url => ({ url }))
+          }
+        }
       })
     }
     redirect('/dashboard/products')
@@ -69,11 +90,11 @@ export default function AdminAddProduct() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-2xl border border-slate-100">
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Nama Produk <span className="text-red-500">*</span></label>
-              <input type="text" name="name" required className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#070864] focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm font-medium" placeholder="Contoh: Kasur Serenity Premium" />
+              <input type="text" name="name" required className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#070864] focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm font-medium text-slate-900" placeholder="Contoh: Kasur Serenity Premium" />
             </div>
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori</label>
-              <input type="text" name="category" className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#070864] focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm font-medium uppercase" placeholder="KASUR" />
+              <input type="text" name="category" className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#070864] focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm font-medium text-slate-900 uppercase" placeholder="KASUR" />
             </div>
           </div>
         </div>
@@ -99,21 +120,27 @@ export default function AdminAddProduct() {
           <div className="space-y-6 bg-slate-50 p-6 rounded-2xl border border-slate-100">
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                <UploadCloud className="w-4 h-4" /> Upload Gambar Lokal
+                <UploadCloud className="w-4 h-4" /> Upload Gambar (Bisa pilih banyak)
               </label>
-              <input type="file" name="imageFile" accept="image/*" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#070864] focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-[#070864] hover:file:bg-blue-100" />
+              <input 
+                type="file" 
+                name="imageFiles" 
+                accept="image/*" 
+                multiple
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:border-[#070864] focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-[#070864] hover:file:bg-blue-100 text-slate-900" 
+              />
             </div>
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                 Atau Gunakan URL Gambar
+                 Atau Gunakan URL Gambar (Pisahkan dengan koma jika lebih dari satu)
               </label>
-              <input type="url" name="imageUrl" className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#070864] focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm" placeholder="https://contoh.com/gambar.jpg" />
+              <input type="text" name="imageUrls" className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#070864] focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm text-slate-900" placeholder="https://url1.com, https://url2.com" />
             </div>
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Deskripsi Lengkap</label>
-              <textarea name="description" rows={5} className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#070864] focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm resize-none" placeholder="Tuliskan spesifikasi, ukuran, dan deskripsi bahan..." />
+              <textarea name="description" rows={5} className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#070864] focus:ring-2 focus:ring-blue-100 outline-none transition-all text-sm resize-none text-slate-900" placeholder="Tuliskan spesifikasi, ukuran, dan deskripsi bahan..." />
             </div>
           </div>
         </div>

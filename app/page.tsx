@@ -1,58 +1,12 @@
-import Link from 'next/link'
 import { Search, MapPin, Heart, ShoppingBag, User, ArrowRight, CreditCard } from 'lucide-react'
+import Navbar from '@/components/Navbar'
+import Link from 'next/link'
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
       {/* Header / Navbar */}
-      <header className="w-full">
-        {/* Top bar with Search & Icons */}
-        <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col lg:flex-row items-center justify-between gap-6">
-          <Link href="/" className="text-3xl font-black text-[#070864] tracking-tight">
-            OMAH.ID
-          </Link>
-
-          <form action="/search" className="flex-1 max-w-2xl w-full relative">
-            <input
-              type="text"
-              name="q"
-              placeholder="Search for anything..."
-              className="w-full bg-[#D9EAFD]/30 border-none rounded-sm py-3 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#0088FF]"
-            />
-            <button type="submit" className="absolute right-4 top-1/2 -translate-y-1/2">
-              <Search className="w-5 h-5 text-slate-500 hover:text-[#0088FF] transition-colors" />
-            </button>
-          </form>
-
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <MapPin className="w-5 h-5 text-slate-700" />
-              <span className="text-sm font-semibold text-slate-800">Track Order</span>
-            </div>
-            <div className="flex items-center gap-6">
-              <div className="relative cursor-pointer">
-                <Heart className="w-6 h-6 text-slate-800" />
-                <span className="absolute -top-2 -right-2 bg-[#070864] text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">1</span>
-              </div>
-              <div className="relative cursor-pointer">
-                <ShoppingBag className="w-6 h-6 text-slate-800" />
-                <span className="absolute -top-2 -right-2 bg-[#070864] text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">0</span>
-              </div>
-              <Link href="/login" className="cursor-pointer">
-                <User className="w-6 h-6 text-slate-800" />
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Navigation Links */}
-        <div className="max-w-7xl mx-auto px-6 pb-6 flex gap-8">
-          <Link href="#" className="text-sm font-bold text-[#070864] tracking-wide hover:text-[#0088FF] transition-colors uppercase">Katalog Produk</Link>
-          <Link href="#" className="text-sm font-bold text-[#070864] tracking-wide hover:text-[#0088FF] transition-colors uppercase">About Us</Link>
-          <Link href="#" className="text-sm font-bold text-[#070864] tracking-wide hover:text-[#0088FF] transition-colors uppercase">Services</Link>
-          <Link href="#" className="text-sm font-bold text-[#070864] tracking-wide hover:text-[#0088FF] transition-colors uppercase">Payment</Link>
-        </div>
-      </header>
+      <Navbar />
 
       <main>
         {/* Hero Banner */}
