@@ -1,5 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { Calendar } from 'lucide-react'
+import DownloadReportButton from './DownloadReportButton'
 import { Line } from 'react-chartjs-2'
 import {
   Chart as ChartJS,
@@ -112,8 +114,18 @@ export default function DashboardPage() {
 
   return (
     <div className="bg-gray-50 p-6">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-900">Ringkasan Operasional</h1>
+      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-bold text-[#070864] tracking-widest uppercase mb-2">Overview Dashboard</p>
+          <h1 className="text-4xl font-black text-[#070864] font-serif">Ringkasan Operasional</h1>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="flex items-center gap-2 bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2.5 rounded-full text-sm font-bold transition-colors">
+            <Calendar className="w-4 h-4" />
+            30 Hari Terakhir
+          </button>
+          <DownloadReportButton />
+        </div>
       </div>
 
       <div className="grid grid-cols-4 gap-4 mb-6">

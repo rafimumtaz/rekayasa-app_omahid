@@ -19,6 +19,8 @@
     "dotenv": "^17.4.2",
     "framer-motion": "^12.38.0",
     "jose": "^6.2.3",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
     "lucide-react": "^1.14.0",
     "mariadb": "^3.5.2",
     "next": "16.2.4",

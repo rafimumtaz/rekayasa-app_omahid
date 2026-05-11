@@ -20,9 +20,10 @@ model User {
   role      Role       @default(USER)
   cart      Cart?
   wishlist  Wishlist[]
-  orders    Order[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  orders       Order[]
+  customOrders CustomOrder[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
 enum Role {
@@ -119,4 +120,35 @@ model OrderItem {
   customOptions String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+enum CustomOrderStatus {
+  PENDING
+  REVIEW
+  PRODUKSI
+  SELESAI
+  BATAL
+}
+
+model CustomOrder {
+  id              String            @id @default(cuid())
+  displayId       String            @unique
+  productName     String
+  description     String
+  materials       String
+  dimensions      String
+  estimatedPrice  Float?
+  status          CustomOrderStatus @default(PENDING)
+  images          CustomOrderImage[]
+  userId          String?
+  user            User?             @relation(fields: [userId], references: [id])
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model CustomOrderImage {
+  id            String      @id @default(cuid())
+  url           String
+  customOrderId String
+  customOrder   CustomOrder @relation(fields: [customOrderId], references: [id], onDelete: Cascade)
 }

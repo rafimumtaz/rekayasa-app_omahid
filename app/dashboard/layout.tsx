@@ -77,8 +77,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <Link href="/dashboard/stock" className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${pathname.includes('/dashboard/stock') ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5 hover:text-white'}`}>
             <Box className="w-5 h-5" /> Manajemen Stok
           </Link>
-          <Link href="/dashboard/orders" className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${pathname.includes('/dashboard/orders') ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5 hover:text-white'}`}>
+          <Link href="/dashboard/orders" className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${pathname === '/dashboard/orders' ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5 hover:text-white'}`}>
             <ShoppingCart className="w-5 h-5" /> Pesanan
+          </Link>
+          <Link href="/dashboard/custom-orders" className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${pathname.includes('/dashboard/custom-orders') ? 'bg-blue-700 text-white shadow-inner' : 'text-blue-200 hover:bg-white/5 hover:text-white'}`}>
+            <Box className="w-5 h-5" /> Custom Order
           </Link>
           <Link href="/dashboard/users" className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${pathname.includes('/dashboard/users') ? 'bg-white/10 text-white' : 'text-blue-200 hover:bg-white/5 hover:text-white'}`}>
             <Users className="w-5 h-5" /> Pengguna
