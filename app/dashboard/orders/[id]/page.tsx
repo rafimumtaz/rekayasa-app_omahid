@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import OrderActionForm from './OrderActionForm'
+import ShipmentTrackingForm from './ShipmentTrackingForm'
 
 export default async function AdminOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -11,7 +12,8 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
     where: { id },
     include: {
       user: true,
-      items: { include: { product: true } }
+      items: { include: { product: true } },
+      shipmentUpdates: { orderBy: { timestamp: 'desc' } }
     }
   })
 
@@ -75,9 +77,17 @@ export default async function AdminOrderDetailPage({ params }: { params: Promise
         </div>
 
         {/* Right: Actions */}
-        <div className="bg-white rounded-3xl p-8 shadow-sm h-fit">
-          <h3 className="text-xl font-black text-[#070864] mb-6">Manajemen Status</h3>
-          <OrderActionForm order={order as any} />
+        <div className="space-y-6">
+          <div className="bg-white rounded-3xl p-8 shadow-sm h-fit">
+            <h3 className="text-xl font-black text-[#070864] mb-6">Manajemen Status</h3>
+            <OrderActionForm order={order as any} />
+          </div>
+
+          {order.status === 'SHIPPED' && (
+            <div className="bg-white rounded-3xl p-8 shadow-sm h-fit">
+              <ShipmentTrackingForm orderId={order.id} updates={order.shipmentUpdates} />
+            </div>
+          )}
         </div>
       </div>
     </div>

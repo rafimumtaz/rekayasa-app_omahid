@@ -13,7 +13,8 @@ export default async function UserOrdersPage() {
   const orders = await prisma.order.findMany({
     where: { userId: session.user.id },
     include: {
-      items: { include: { product: { include: { images: true } } } }
+      items: { include: { product: { include: { images: true } } } },
+      shipmentUpdates: { orderBy: { timestamp: 'desc' } }
     },
     orderBy: { createdAt: 'desc' }
   })
@@ -84,7 +85,7 @@ export default async function UserOrdersPage() {
                 </div>
 
                 {(order.trackingNumber || order.status === 'PENDING') && (
-                  <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-wrap justify-between items-center gap-4">
+                  <div className="bg-slate-50 rounded-xl p-4 border border-slate-100 flex flex-wrap justify-between items-center gap-4 mb-4">
                     {order.trackingNumber && (
                       <div>
                         <p className="text-xs text-slate-400 font-bold mb-1 uppercase tracking-widest">Resi Pengiriman</p>
@@ -96,6 +97,24 @@ export default async function UserOrdersPage() {
                         LANJUTKAN PEMBAYARAN
                       </a>
                     )}
+                  </div>
+                )}
+
+                {order.shipmentUpdates && order.shipmentUpdates.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-slate-100">
+                    <h4 className="text-sm font-bold text-[#070864] mb-4">Status Pengiriman Terkini</h4>
+                    <div className="space-y-4 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 before:to-transparent">
+                      {order.shipmentUpdates.map((update: any) => (
+                        <div key={update.id} className="relative flex flex-col md:flex-row items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                          <div className="w-4 h-4 rounded-full bg-[#070864] shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 relative z-10 shadow-[0_0_0_4px_#fff]" />
+                          <div className="w-[calc(100%-2rem)] md:w-[calc(50%-2.5rem)] bg-slate-50 p-4 rounded-xl border border-slate-100 shadow-sm ml-8 md:ml-0 md:group-odd:text-right">
+                            <span className="block text-xs font-bold text-[#070864] mb-1">{update.location}</span>
+                            <span className="block text-[10px] text-slate-400 mb-2">{new Date(update.timestamp).toLocaleString('id-ID')}</span>
+                            <p className="text-xs text-slate-700 leading-relaxed">{update.status}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
